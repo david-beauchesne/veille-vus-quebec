@@ -62,11 +62,12 @@ python -m unittest discover -s tests -v
 ## GitHub Actions
 
 Le workflow quotidien ne demande aucun secret : `GITHUB_TOKEN` suffit pour
-committer la base et le dashboard. Dans les réglages du dépôt, autorisez les
-Actions à écrire dans le dépôt. SQLite dans Git convient à cette petite V1,
-mais évitez deux exécutions simultanées. GitHub Pages peut publier le dossier
-`output/` si vous voulez un lien privé ou public; attention, les annonces et
-l'historique deviennent alors accessibles selon la visibilité du site.
+committer la base et le dashboard, puis publier directement le dossier `output/`
+sur GitHub Pages. Dans **Settings → Pages → Build and deployment**, choisissez
+**GitHub Actions** comme source. Dans **Settings → Actions → General**, autorisez
+les Actions à écrire dans le dépôt. SQLite dans Git convient à cette petite V1;
+le workflow empêche deux publications Pages simultanées. La page et les annonces
+qu'elle contient sont publiques.
 
 ## Limites V1
 
