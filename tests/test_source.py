@@ -9,3 +9,6 @@ class SourceTests(unittest.TestCase):
         parser=JsonLdParser(); parser.feed('<script type="application/ld+json">{"@type":"Vehicle","model":"RAV4"}</script>')
         found=[x for b in parser.blocks for x in objects(json.loads(b)) if x.get("@type")=="Vehicle"]
         self.assertEqual(found[0]["model"],"RAV4")
+    def test_infers_d2c_vehicle_name(self):
+        x=infer("Mazda CX-5 2023", "Kilométrage 68 400 km")
+        self.assertEqual((x["make"],x["model"],x["year"],x["mileage"]),("Mazda","CX-5",2023,68400))

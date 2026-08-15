@@ -34,6 +34,41 @@ urls = [
 ]
 default_location = "Québec (province)"
 
+[[sources]]
+name = "mazda-chatel"
+type = "jsonld"
+enabled = true
+url = "https://www.mazdachatel.com/occasion/Mazda-CX_5.html?nfr=1"
+default_location = "Québec"
+
+[[sources]]
+name = "honda-de-la-capitale"
+type = "jsonld"
+enabled = true
+url = "https://www.hondadelacapitale.com/occasion/HONDA-CR_V.html"
+default_location = "Québec"
+
+[[sources]]
+name = "levis-toyota"
+type = "jsonld"
+enabled = true
+url = "https://www.levistoyota.ca/occasion/Toyota-Rav4.html?nfr=1"
+default_location = "Lévis"
+
+[[sources]]
+name = "levis-subaru"
+type = "jsonld"
+enabled = true
+url = "https://www.levissubaru.com/occasion/recherche.html"
+default_location = "Lévis"
+
+[[sources]]
+name = "desjardins-subaru"
+type = "jsonld"
+enabled = true
+url = "https://www.desjardinssubaru.com/auto-usage/"
+default_location = "Québec"
+
 [weights.long_term]
 reliability = 0.22
 mechanical_simplicity = 0.12

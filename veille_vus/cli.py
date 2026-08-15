@@ -19,6 +19,10 @@ def run_collect(cfg):
         except Exception as e:
             print(f"AVERTISSEMENT {source['name']}: {e}"); continue
         for item in items:
+            base = f"{item.get('make') or ''} {item.get('model') or ''}".strip().lower()
+            wanted = cfg["search"]["primary_models"] + cfg["search"]["secondary_models"]
+            wanted = {name.lower().removesuffix(" hybrid") for name in wanted}
+            if base not in wanted: continue
             if item.get("year") and not cfg["search"]["min_year"] <= int(item["year"]) <= cfg["search"]["max_year"]: continue
             if item.get("price") and int(item["price"]) > cfg["search"]["absolute_price_max"]: continue
             if item.get("mileage") and int(item["mileage"]) > cfg["search"]["acceptable_mileage_max"]: continue

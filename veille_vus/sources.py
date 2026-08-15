@@ -15,7 +15,7 @@ def infer(title, description=""):
     blob = html.unescape(re.sub(r"<[^>]+>", " ", title + " " + description))
     year_m = re.search(r"\b(20(?:1[6-9]|2[0-6]))\b", blob)
     price_m = re.search(r"(?:\$\s*([\d ,]{4,})|([\d ,]{4,})\s*\$)", blob)
-    km_m = re.search(r"([\d ,]{2,})\s*(?:km|kilom)", blob, re.I)
+    km_m = re.search(r"(\d{1,3}(?:[ \u00a0,]\d{3})+|\d{2,6})\s*km\b", blob, re.I)
     models = [("Mazda","CX-5"),("Honda","CR-V"),("Toyota","RAV4"),("Subaru","Forester"),
               ("Subaru","Outback"),("Toyota","Venza"),("Volkswagen","Tiguan")]
     make = model = None
@@ -86,18 +86,24 @@ def collect_jsonld(source, timeout=25):
                 kinds=obj.get("@type",[]); kinds=[kinds] if isinstance(kinds,str) else kinds
                 if "Vehicle" not in kinds: continue
                 offer=obj.get("offers") or {}; seller=offer.get("seller") or {}; desc=obj.get("description") or ""
-                rel=(obj.get("url") or "").replace("auto-usage/auto-usage/","auto-usage/")
+                vin=obj.get("vehicleIdentificationNumber")
+                pos=body.find(vin) if vin else -1
+                context=body[max(0,pos-5000):pos+50000] if pos >= 0 else desc
+                guessed=infer(obj.get("name") or "",context)
+                rel=(obj.get("url") or offer.get("url") or "").replace("auto-usage/auto-usage/","auto-usage/")
                 if rel and not rel.startswith(("/","http://","https://")): rel="/"+rel
-                url=urljoin(page_url,rel); vin=obj.get("vehicleIdentificationNumber")
+                url=urljoin(page_url,rel)
                 ext=vin or hashlib.sha256(url.encode()).hexdigest()[:24]
                 model=obj.get("model"); brand=obj.get("brand"); brand=brand.get("name") if isinstance(brand,dict) else brand
+                model=model or guessed.get("model")
                 carfax=1 if re.search(r"carfax",desc,re.I) else None
                 accident="Aucun accident déclaré" if re.search(r"jamais accident|aucun accident",desc,re.I) else None
                 owners=1 if re.search(r"(?:1|un)\s*(?:seul\s*)?propri",desc,re.I) else None
                 out.append({"source":source["name"],"external_id":ext,"url":url,"title":obj.get("name"),
                   "make":brand,"model":model,"trim":obj.get("vehicleConfiguration"),
-                  "year":obj.get("vehicleModelDate"),"price":offer.get("price"),
-                  "mileage":obj.get("mileageFromOdometer"),"location":source.get("default_location"),
+                  "year":obj.get("vehicleModelDate") or guessed.get("year"),"price":offer.get("price") or guessed.get("price"),
+                  "mileage":obj.get("mileageFromOdometer") or guessed.get("mileage"),"location":source.get("default_location"),
                   "seller_type":"Concessionnaire","seller_name":seller.get("name"),
-                  "fuel":obj.get("fuelType"),"accident_history":accident,"owners":owners,"carfax":carfax})
+                  "transmission":guessed.get("transmission"),"drivetrain":guessed.get("drivetrain"),
+                  "fuel":obj.get("fuelType") or guessed.get("fuel"),"accident_history":accident,"owners":owners,"carfax":carfax})
     return list({(x["source"],x["external_id"]):x for x in out}.values())

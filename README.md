@@ -37,10 +37,11 @@ faites toujours inspecter un véhicule avant achat.
 
 ## Ajouter une source
 
-La source V1 lit les objets `Vehicle` Schema.org publiés dans les pages
-d'inventaire d'Occasion Beaucage. Le collecteur vérifie `robots.txt` avant les
-pages, fait un seul passage quotidien et ne contourne aucune protection. Pour un
-flux RSS autorisé, ajoutez une section `[[sources]]` avec `name`,
+Les sources V1 lisent les objets `Vehicle` Schema.org publiés par Occasion
+Beaucage, Mazda Chatel, Honda de la Capitale, Lévis Toyota, Lévis Subaru et
+Desjardins Subaru. Le collecteur vérifie `robots.txt` avant les pages, fait un
+seul passage quotidien et ne contourne aucune protection. Pour un flux RSS
+autorisé, ajoutez une section `[[sources]]` avec `name`,
 `type = "rss"`, `url` et, facultativement, `default_location`.
 
 Pour un nouveau format, créez une fonction dans `veille_vus/sources.py` qui
