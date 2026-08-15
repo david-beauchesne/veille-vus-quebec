@@ -1,0 +1,2 @@
+"""Veille VUS Quebec."""
+
