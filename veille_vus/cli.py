@@ -1,32 +1,45 @@
 import argparse, hashlib, json, re, tomllib, urllib.request
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from . import db
 from .dashboard import build
 from .scoring import score
-from .sources import collect_rss, collect_jsonld, infer, UA
+from .sources import collect_rss, collect_jsonld, verify_detail, infer, UA
 
 def config(path):
     with open(path,"rb") as f: return tomllib.load(f)
 def now(): return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
 
+def collect_source(source,cfg,stamp):
+    items = collect_rss(source) if source["type"] == "rss" else collect_jsonld(source)
+    accepted=[]
+    for item in items:
+        base = f"{item.get('make') or ''} {item.get('model') or ''}".strip().lower()
+        wanted = cfg["search"]["primary_models"] + cfg["search"]["secondary_models"]
+        wanted = {name.lower().removesuffix(" hybrid") for name in wanted}
+        if base not in wanted: continue
+        if item.get("year") and not cfg["search"]["min_year"] <= int(item["year"]) <= cfg["search"]["max_year"]: continue
+        if item.get("price") and int(item["price"]) > cfg["search"]["absolute_price_max"]: continue
+        if item.get("verification_status") != "verified" and source["type"] == "jsonld":
+            item=verify_detail(item,source); item["verified_at"]=stamp if item.get("verification_status")=="verified" else None
+        if item.get("verification_status") == "verified" and not item.get("verified_at"): item["verified_at"]=stamp
+        item["in_scope"]=not (item.get("mileage") and int(item["mileage"]) > cfg["search"]["acceptable_mileage_max"])
+        accepted.append(item)
+    return accepted
+
 def run_collect(cfg):
     con=db.connect(cfg["app"]["database"]); stamp=now(); new=seen=0
-    for source in cfg.get("sources",[]):
-        if not source.get("enabled",True): continue
-        try:
-            items = collect_rss(source) if source["type"] == "rss" else collect_jsonld(source)
-        except Exception as e:
-            print(f"AVERTISSEMENT {source['name']}: {e}"); continue
-        for item in items:
-            base = f"{item.get('make') or ''} {item.get('model') or ''}".strip().lower()
-            wanted = cfg["search"]["primary_models"] + cfg["search"]["secondary_models"]
-            wanted = {name.lower().removesuffix(" hybrid") for name in wanted}
-            if base not in wanted: continue
-            if item.get("year") and not cfg["search"]["min_year"] <= int(item["year"]) <= cfg["search"]["max_year"]: continue
-            if item.get("price") and int(item["price"]) > cfg["search"]["absolute_price_max"]: continue
-            if item.get("mileage") and int(item["mileage"]) > cfg["search"]["acceptable_mileage_max"]: continue
-            _, created=db.upsert(con,item,stamp); new+=created; seen+=1
+    sources=[s for s in cfg.get("sources",[]) if s.get("enabled",True)]
+    with ThreadPoolExecutor(max_workers=min(5,len(sources) or 1)) as pool:
+        futures={pool.submit(collect_source,s,cfg,stamp):s for s in sources}
+        for future in as_completed(futures):
+            source=futures[future]
+            try: items=future.result()
+            except Exception as e:
+                print(f"AVERTISSEMENT {source['name']}: {e}"); continue
+            for item in items:
+                _, created=db.upsert(con,item,stamp); new+=created; seen+=1
     cutoff=(datetime.now(timezone.utc)-timedelta(days=cfg["app"]["disappeared_after_days"])).isoformat()
     con.execute("UPDATE listings SET status='disappeared',recommendation='Disparu' WHERE status='active' AND last_seen<?",(cutoff,))
     rescore(con,cfg); con.commit(); print(f"{seen} annonces vues, {new} nouvelles")
@@ -36,12 +49,18 @@ def add_url(cfg,url):
     with urllib.request.urlopen(req,timeout=20) as r: body=r.read(2_000_000).decode(errors="replace")
     title=re.search(r"<title[^>]*>(.*?)</title>",body,re.I|re.S)
     title=re.sub(r"\s+"," ",title.group(1)).strip() if title else url
-    item={"source":"manual","external_id":hashlib.sha256(url.encode()).hexdigest()[:24],"url":url,"title":title}
+    item={"source":"manual","external_id":hashlib.sha256(url.encode()).hexdigest()[:24],"url":url,"title":title,
+          "verification_status":"unverified","data_confidence":0.25,"verification_error":"Ajout manuel non vérifié"}
     item.update(infer(title,body[:100000])); con=db.connect(cfg["app"]["database"]); db.upsert(con,item,now()); rescore(con,cfg); con.commit(); print("Annonce ajoutée.")
 
 def rescore(con,cfg):
     for row in con.execute("SELECT * FROM listings"):
-        item=dict(row); lt,fs,overall,rec=score(item,cfg)
+        item=dict(row)
+        if item["status"] == "disappeared": lt=fs=overall=None; rec="Disparu"
+        elif not item.get("in_scope",1): lt=fs=overall=None; rec="Hors critères"
+        elif item.get("verification_status") != "verified" or any(item.get(k) is None for k in ("year","price","mileage","make","model")):
+            lt=fs=overall=None; rec="Données à vérifier"
+        else: lt,fs,overall,rec=score(item,cfg)
         con.execute("UPDATE listings SET long_term_score=?,four_six_year_score=?,overall_score=?,recommendation=? WHERE id=?",(lt,fs,overall,rec,row["id"]))
 
 def dashboard(cfg):

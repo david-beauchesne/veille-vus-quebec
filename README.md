@@ -17,6 +17,13 @@ Le collecteur continue même si une source est temporairement indisponible. La
 base SQLite est dans `data/vehicles.sqlite3`. Une annonce non revue pendant 7
 jours passe à **Disparu**, mais n'est jamais supprimée.
 
+Les pages d'inventaire servent à découvrir les annonces. Si leurs champs
+critiques ne sont pas reliés explicitement au véhicule, le collecteur ouvre la
+fiche détaillée et exige une correspondance exacte du VIN. Une annonce doit avoir
+un modèle, une année, un prix et un kilométrage vérifiés avant de recevoir un
+score. Sinon, elle apparaît comme **Données à vérifier** et reste exclue du Top
+10. Les délais d'exploration demandés par les sites sont respectés.
+
 Pour ajouter une annonce ponctuelle :
 
 ```bash
@@ -34,6 +41,10 @@ scores sont calculés séparément, puis combinés dans `overall_score`; l'agré
 de conduite vaut seulement 5 %. Les notes sont des hypothèses initiales de
 décision, pas des garanties mécaniques. Ajustez-les selon votre expérience et
 faites toujours inspecter un véhicule avant achat.
+
+Le dashboard distingue le score d'achat de la confiance dans les données. La
+mention **Vérifiée** signifie que les champs critiques proviennent de la fiche
+correspondant au VIN; elle ne remplace ni un CARFAX ni une inspection mécanique.
 
 ## Ajouter une source
 
@@ -72,8 +83,8 @@ qu'elle contient sont publiques.
 
 ## Limites V1
 
-- La couverture RSS québécoise peut être faible; l'ajout manuel est prévu pour
-  les annonces trouvées ailleurs.
+- La couverture se limite encore aux concessionnaires configurés; l'ajout
+  manuel est prévu pour les annonces trouvées ailleurs.
 - La disparition est déterminée par absence après 7 jours, pas par confirmation
   de vente.
 - Les taxes, accidents et propriétaires sont stockables mais souvent absents

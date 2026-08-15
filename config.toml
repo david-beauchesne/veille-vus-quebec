@@ -40,6 +40,7 @@ type = "jsonld"
 enabled = true
 url = "https://www.mazdachatel.com/occasion/Mazda-CX_5.html?nfr=1"
 default_location = "Québec"
+detail_delay_seconds = 10
 
 [[sources]]
 name = "honda-de-la-capitale"
@@ -47,6 +48,7 @@ type = "jsonld"
 enabled = true
 url = "https://www.hondadelacapitale.com/occasion/HONDA-CR_V.html"
 default_location = "Québec"
+detail_delay_seconds = 10
 
 [[sources]]
 name = "levis-toyota"
@@ -54,6 +56,7 @@ type = "jsonld"
 enabled = true
 url = "https://www.levistoyota.ca/occasion/Toyota-Rav4.html?nfr=1"
 default_location = "Lévis"
+detail_delay_seconds = 10
 
 [[sources]]
 name = "levis-subaru"
@@ -61,6 +64,7 @@ type = "jsonld"
 enabled = true
 url = "https://www.levissubaru.com/occasion/recherche.html"
 default_location = "Lévis"
+detail_delay_seconds = 10
 
 [[sources]]
 name = "desjardins-subaru"
