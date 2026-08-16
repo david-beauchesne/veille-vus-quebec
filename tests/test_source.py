@@ -20,3 +20,8 @@ class SourceTests(unittest.TestCase):
         item=_vehicle_item(obj,"https://dealer.test/list",{"name":"dealer","default_location":"Québec"})
         self.assertEqual(item["mileage"],113456)
         self.assertEqual(item["verification_status"],"verified")
+    def test_infers_new_models(self):
+        cx30=infer("Mazda CX-30 2023", "88 697 km")
+        cross=infer("Toyota Corolla Cross 2022", "63 569 km")
+        self.assertEqual((cx30["make"],cx30["model"]),("Mazda","CX-30"))
+        self.assertEqual((cross["make"],cross["model"]),("Toyota","Corolla Cross"))

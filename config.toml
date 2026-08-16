@@ -14,7 +14,7 @@ ideal_mileage_max = 100000
 acceptable_mileage_max = 110000
 home_keywords = ["quebec", "québec", "levis", "lévis", "beauport", "charlesbourg", "sainte-foy"]
 montreal_keywords = ["montreal", "montréal", "laval", "longueuil", "brossard"]
-primary_models = ["Mazda CX-5", "Honda CR-V", "Toyota RAV4", "Toyota RAV4 Hybrid", "Subaru Forester"]
+primary_models = ["Mazda CX-5", "Mazda CX-30", "Honda CR-V", "Toyota RAV4", "Toyota RAV4 Hybrid", "Toyota Corolla Cross", "Subaru Forester"]
 secondary_models = ["Subaru Outback", "Toyota Venza Hybrid", "Volkswagen Tiguan"]
 
 # Donnees structurees Schema.org publiees par Occasion Beaucage. Son robots.txt
@@ -38,7 +38,10 @@ default_location = "Québec (province)"
 name = "mazda-chatel"
 type = "jsonld"
 enabled = true
-url = "https://www.mazdachatel.com/occasion/Mazda-CX_5.html?nfr=1"
+urls = [
+  "https://www.mazdachatel.com/occasion/Mazda-CX_5.html?nfr=1",
+  "https://www.mazdachatel.com/occasion/Mazda-CX_30.html"
+]
 default_location = "Québec"
 detail_delay_seconds = 10
 
@@ -54,7 +57,10 @@ detail_delay_seconds = 10
 name = "levis-toyota"
 type = "jsonld"
 enabled = true
-url = "https://www.levistoyota.ca/occasion/Toyota-Rav4.html?nfr=1"
+urls = [
+  "https://www.levistoyota.ca/occasion/Toyota-Rav4.html?nfr=1",
+  "https://www.levistoyota.ca/occasion/Toyota-Corolla_Cross.html"
+]
 default_location = "Lévis"
 detail_delay_seconds = 10
 
@@ -193,3 +199,27 @@ resale=7.0
 reputation=6.8
 demand=7.2
 driving=8.7
+
+[models."Mazda CX-30"]
+reliability=8.3
+simplicity=8.4
+maintenance=8.0
+fuel=7.6
+longevity=8.1
+residual=7.7
+resale=7.8
+reputation=8.2
+demand=7.8
+driving=9.1
+
+[models."Toyota Corolla Cross"]
+reliability=8.9
+simplicity=8.3
+maintenance=8.6
+fuel=8.2
+longevity=9.0
+residual=9.1
+resale=9.0
+reputation=8.8
+demand=8.8
+driving=6.8

@@ -18,7 +18,7 @@ def infer(title, description=""):
     year_m = re.search(r"\b(20(?:1[6-9]|2[0-6]))\b", blob)
     price_m = re.search(r"(?:\$\s*([\d ,]{4,})|([\d ,]{4,})\s*\$)", blob)
     km_m = re.search(r"(\d{1,3}(?:[ \u00a0,]\d{3})+|\d{2,6})\s*km\b", blob, re.I)
-    models = [("Mazda","CX-5"),("Honda","CR-V"),("Toyota","RAV4"),("Subaru","Forester"),
+    models = [("Toyota","Corolla Cross"),("Mazda","CX-30"),("Mazda","CX-5"),("Honda","CR-V"),("Toyota","RAV4"),("Subaru","Forester"),
               ("Subaru","Outback"),("Toyota","Venza"),("Volkswagen","Tiguan")]
     make = model = None
     for a,b in models:

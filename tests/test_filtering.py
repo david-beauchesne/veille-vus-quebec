@@ -11,4 +11,6 @@ class FilteringTests(unittest.TestCase):
         wanted=wanted_models(cfg)
         self.assertIn("toyota rav4",wanted)
         self.assertIn("toyota venza",wanted)
+        self.assertIn("mazda cx-30",wanted)
+        self.assertIn("toyota corolla cross",wanted)
         self.assertNotIn("subaru crosstrek",wanted)
