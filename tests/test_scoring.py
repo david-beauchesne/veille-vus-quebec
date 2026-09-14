@@ -14,3 +14,7 @@ class ScoringTests(unittest.TestCase):
         lt,fs,total,label=score(x,cfg())
         self.assertTrue(0<=lt<=10 and 0<=fs<=10 and 0<=total<=10)
         self.assertIn(label,{"À contacter","Bonne valeur","À surveiller","Ignorer"})
+    def test_strong_market_discount_triggers_contact(self):
+        x={"make":"Mazda","model":"CX-5","year":2021,"price":24000,"mileage":70000,
+           "fuel":"Essence","status":"active","market_score":9,"market_delta_pct":-8}
+        self.assertEqual(score(x,cfg())[3],"À contacter")

@@ -1,6 +1,7 @@
-# Veille VUS Québec
+# Veille Mazda CX-5 Québec
 
-Une V1 locale et sans service payant pour conserver l'historique des annonces,
+Une V1 locale et sans service payant, maintenant ciblée exclusivement sur le
+Mazda CX-5, pour conserver l'historique des annonces,
 noter deux stratégies d'achat et produire un dashboard HTML partageable.
 
 ## Démarrage
@@ -46,11 +47,24 @@ Le dashboard distingue le score d'achat de la confiance dans les données. La
 mention **Vérifiée** signifie que les champs critiques proviennent de la fiche
 correspondant au VIN; elle ne remplace ni un CARFAX ni une inspection mécanique.
 
+### Comparaison au marché observé
+
+Pour chaque CX-5 vérifié, le système compare son prix aux autres CX-5 déjà vus.
+Il ramène les comparables à une année, un kilométrage et une version équivalents,
+puis utilise leur médiane. Le dashboard montre le prix de marché estimé, l'écart
+et le nombre de comparables. Les ajustements sont modifiables dans `[market]` de
+`config.toml`.
+
+Cette estimation compare des **prix demandés**, non les prix de vente négociés.
+Elle est donc un outil de tri. Une annonce disparue rapidement constitue un
+signal intéressant, mais ne prouve pas que le véhicule a été vendu ni à quel
+prix. La précision augmentera avec la durée et la diversité de l'historique.
+
 ## Ajouter une source
 
-Les sources V1 lisent les objets `Vehicle` Schema.org publiés par Occasion
-Beaucage, Mazda Chatel, Honda de la Capitale, Lévis Toyota, Lévis Subaru et
-Desjardins Subaru. Le collecteur vérifie `robots.txt` avant les pages, fait un
+Les sources actives lisent les objets `Vehicle` Schema.org publiés par Occasion
+Beaucage et Mazda Chatel pour leurs CX-5. Les anciennes sources sont conservées
+mais désactivées dans `config.toml`. Le collecteur vérifie `robots.txt`, fait un
 seul passage quotidien et ne contourne aucune protection. Pour un flux RSS
 autorisé, ajoutez une section `[[sources]]` avec `name`,
 `type = "rss"`, `url` et, facultativement, `default_location`.

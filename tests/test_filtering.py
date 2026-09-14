@@ -9,8 +9,5 @@ class FilteringTests(unittest.TestCase):
     def test_hybrid_names_match_base_listing_model(self):
         with open("config.toml","rb") as f: cfg=tomllib.load(f)
         wanted=wanted_models(cfg)
-        self.assertIn("toyota rav4",wanted)
-        self.assertIn("toyota venza",wanted)
-        self.assertIn("mazda cx-30",wanted)
-        self.assertIn("toyota corolla cross",wanted)
+        self.assertEqual(wanted,{"mazda cx-5"})
         self.assertNotIn("subaru crosstrek",wanted)

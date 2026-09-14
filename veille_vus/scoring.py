@@ -32,13 +32,17 @@ def score(item, cfg, today_year=2026):
       "used_demand":p.get("demand",5)
     }, cfg["weights"]["four_six_year"])
     ow = cfg["weights"]["overall"]
-    overall = round(lt*ow["long_term"] + fs*ow["four_six_year"] + p.get("driving",5)*ow["driving"], 1)
+    overall = round(lt*ow["long_term"] + fs*ow["four_six_year"] +
+                    p.get("driving",5)*ow["driving"] +
+                    (item.get("market_score") or 5)*ow.get("market_value",0), 1)
     return lt, fs, overall, recommendation(overall, item)
 
 def recommendation(s, item):
     if item.get("status") == "disappeared": return "Disparu"
+    market_delta = item.get("market_delta_pct")
+    if market_delta is not None and market_delta <= -6 and s >= 7.3: return "À contacter"
+    if market_delta is not None and market_delta <= -3 and s >= 7.0: return "Bonne valeur"
     if s >= 8.3: return "À contacter"
     if s >= 7.5: return "Bonne valeur"
     if s >= 6.4: return "À surveiller"
     return "Ignorer"
-

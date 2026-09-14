@@ -5,6 +5,7 @@ from pathlib import Path
 from . import db
 from .dashboard import build
 from .scoring import score
+from .market import calculate as calculate_market
 from .sources import collect_rss, collect_jsonld, verify_detail, infer, UA
 
 def config(path):
@@ -54,6 +55,7 @@ def add_url(cfg,url):
     item.update(infer(title,body[:100000])); con=db.connect(cfg["app"]["database"]); db.upsert(con,item,now()); rescore(con,cfg); con.commit(); print("Annonce ajoutée.")
 
 def rescore(con,cfg):
+    calculate_market(con,cfg)
     for row in con.execute("SELECT * FROM listings"):
         item=dict(row)
         if item["status"] == "disappeared": lt=fs=overall=None; rec="Disparu"

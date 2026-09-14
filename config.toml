@@ -14,8 +14,17 @@ ideal_mileage_max = 100000
 acceptable_mileage_max = 110000
 home_keywords = ["quebec", "québec", "levis", "lévis", "beauport", "charlesbourg", "sainte-foy"]
 montreal_keywords = ["montreal", "montréal", "laval", "longueuil", "brossard"]
-primary_models = ["Mazda CX-5", "Mazda CX-30", "Honda CR-V", "Toyota RAV4", "Toyota RAV4 Hybrid", "Toyota Corolla Cross", "Subaru Forester"]
-secondary_models = ["Subaru Outback", "Toyota Venza Hybrid", "Volkswagen Tiguan"]
+primary_models = ["Mazda CX-5"]
+secondary_models = []
+
+# Calibration de la comparaison entre CX-5. Ces montants servent uniquement à
+# ramener les comparables à année, kilométrage et version équivalents.
+[market]
+minimum_comparables = 5
+year_adjustment = 2300
+mileage_adjustment_per_10000_km = 850
+discount_pct_per_score_point = 2.0
+trim_adjustments = { GX = 0, GS = 1500, Kuro = 2500, GT = 4000, Signature = 5500, Turbo = 3500 }
 
 # Donnees structurees Schema.org publiees par Occasion Beaucage. Son robots.txt
 # autorise actuellement l'indexation; le collecteur le reverifie avant chaque lot.
@@ -25,12 +34,6 @@ type = "jsonld"
 enabled = true
 urls = [
   "https://www.occasionbeaucage.com/auto-usage/mazda/cx-5/",
-  "https://www.occasionbeaucage.com/auto-usage/honda/cr-v/",
-  "https://www.occasionbeaucage.com/auto-usage/toyota/rav4/",
-  "https://www.occasionbeaucage.com/auto-usage/subaru/forester/",
-  "https://www.occasionbeaucage.com/auto-usage/subaru/outback/",
-  "https://www.occasionbeaucage.com/auto-usage/toyota/venza/",
-  "https://www.occasionbeaucage.com/auto-usage/volkswagen/tiguan/"
 ]
 default_location = "Québec (province)"
 
@@ -39,8 +42,7 @@ name = "mazda-chatel"
 type = "jsonld"
 enabled = true
 urls = [
-  "https://www.mazdachatel.com/occasion/Mazda-CX_5.html?nfr=1",
-  "https://www.mazdachatel.com/occasion/Mazda-CX_30.html"
+  "https://www.mazdachatel.com/occasion/Mazda-CX_5.html?nfr=1"
 ]
 default_location = "Québec"
 detail_delay_seconds = 10
@@ -48,7 +50,7 @@ detail_delay_seconds = 10
 [[sources]]
 name = "honda-de-la-capitale"
 type = "jsonld"
-enabled = true
+enabled = false
 url = "https://www.hondadelacapitale.com/occasion/HONDA-CR_V.html"
 default_location = "Québec"
 detail_delay_seconds = 10
@@ -56,7 +58,7 @@ detail_delay_seconds = 10
 [[sources]]
 name = "levis-toyota"
 type = "jsonld"
-enabled = true
+enabled = false
 urls = [
   "https://www.levistoyota.ca/occasion/Toyota-Rav4.html?nfr=1",
   "https://www.levistoyota.ca/occasion/Toyota-Corolla_Cross.html"
@@ -67,7 +69,7 @@ detail_delay_seconds = 10
 [[sources]]
 name = "levis-subaru"
 type = "jsonld"
-enabled = true
+enabled = false
 url = "https://www.levissubaru.com/occasion/recherche.html"
 default_location = "Lévis"
 detail_delay_seconds = 10
@@ -75,7 +77,7 @@ detail_delay_seconds = 10
 [[sources]]
 name = "desjardins-subaru"
 type = "jsonld"
-enabled = true
+enabled = false
 url = "https://www.desjardinssubaru.com/auto-usage/"
 default_location = "Québec"
 
@@ -99,9 +101,10 @@ reputation = 0.12
 used_demand = 0.10
 
 [weights.overall]
-long_term = 0.55
-four_six_year = 0.40
+long_term = 0.50
+four_six_year = 0.30
 driving = 0.05
+market_value = 0.15
 
 # Notes de base /10, modifiables sans toucher au code.
 [models."Mazda CX-5"]

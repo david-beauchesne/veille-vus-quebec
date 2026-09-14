@@ -34,7 +34,9 @@ def connect(path):
       "verification_status":"TEXT NOT NULL DEFAULT 'unverified'",
       "data_confidence":"REAL NOT NULL DEFAULT 0",
       "field_provenance":"TEXT", "verified_at":"TEXT", "verification_error":"TEXT"
-      ,"in_scope":"INTEGER NOT NULL DEFAULT 1"
+      ,"in_scope":"INTEGER NOT NULL DEFAULT 1",
+      "market_price":"INTEGER", "market_delta":"INTEGER", "market_delta_pct":"REAL",
+      "market_score":"REAL", "comparable_count":"INTEGER NOT NULL DEFAULT 0"
     }
     for name,definition in migrations.items():
         if name not in columns: con.execute(f"ALTER TABLE listings ADD COLUMN {name} {definition}")
